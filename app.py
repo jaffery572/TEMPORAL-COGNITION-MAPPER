@@ -1,26 +1,26 @@
 """
-CHRONOSPHERE: Personal Spacetime Optimization Engine
-Einstein-Level Innovation: Fusing relativity physics with cognitive time perception
+MIND-GRAVITY FIELD MAPPER: Cognitive Gravity Simulator
+Einstein-Level Innovation: Applying gravitational physics to attention management
 
 Deployment: Push to GitHub, connect to Streamlit Cloud, no additional config needed.
 """
 
 import streamlit as st
-import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
+import networkx as nx
+import pandas as pd
 import altair as alt
 from datetime import datetime, timedelta
-import time
-from scipy import stats, interpolate
+from scipy import integrate, interpolate
 import warnings
 warnings.filterwarnings('ignore')
 
 # ==================== PAGE CONFIG ====================
 st.set_page_config(
-    page_title="CHRONOSPHERE | Your Personal Spacetime",
-    page_icon="⏳",
+    page_title="MIND-GRAVITY | Your Cognitive Field",
+    page_icon="🌀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -28,78 +28,83 @@ st.set_page_config(
 # ==================== CUSTOM CSS ====================
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
     
     .main {
-        font-family: 'Space Mono', monospace;
-        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-        color: #e6e6e6;
+        font-family: 'Orbitron', monospace;
+        background: radial-gradient(circle at center, #000428, #004e92);
+        color: #e6f7ff;
     }
     
     .stApp {
-        background: rgba(10, 10, 30, 0.95);
+        background: rgba(0, 10, 40, 0.95);
     }
     
-    .spacetime-title {
-        font-size: 3.5rem;
-        background: linear-gradient(90deg, #00ffff, #0080ff);
+    .gravity-title {
+        font-size: 3.8rem;
+        background: linear-gradient(90deg, #00ffff, #ff00ff, #ffff00);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
         margin-bottom: 0.5rem;
         font-weight: 700;
+        text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
     }
     
     .einstein-quote {
         font-size: 1.1rem;
-        color: #aaaaff;
+        color: #88ccff;
         text-align: center;
         font-style: italic;
         margin-bottom: 2rem;
-        padding: 0 20%;
+        padding: 0 15%;
     }
     
-    .metric-card {
-        background: rgba(20, 20, 60, 0.7);
-        border: 2px solid #4444ff;
+    .gravity-card {
+        background: rgba(10, 30, 70, 0.8);
+        border: 2px solid;
+        border-image: linear-gradient(45deg, #00ffff, #ff00ff) 1;
         border-radius: 15px;
         padding: 1.5rem;
         margin: 1rem 0;
-        box-shadow: 0 10px 30px rgba(0, 100, 255, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 150, 255, 0.2);
         transition: all 0.3s ease;
     }
     
-    .metric-card:hover {
+    .gravity-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(0, 100, 255, 0.3);
-        border-color: #00ffff;
+        box-shadow: 0 15px 40px rgba(0, 200, 255, 0.4);
     }
     
-    .time-dilation-indicator {
-        height: 10px;
-        background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
-        border-radius: 5px;
+    .field-line {
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #00ffff, transparent);
         margin: 10px 0;
+        border-radius: 2px;
     }
     
     .stButton > button {
-        background: linear-gradient(90deg, #0080ff, #00ffff);
-        color: black;
+        background: linear-gradient(90deg, #004e92, #000428);
+        color: white;
         font-weight: bold;
-        border: none;
+        border: 1px solid #00ffff;
         padding: 12px 30px;
         border-radius: 25px;
         transition: all 0.3s ease;
-        font-family: 'Space Mono', monospace;
+        font-family: 'Orbitron', monospace;
     }
     
     .stButton > button:hover {
+        background: linear-gradient(90deg, #000428, #004e92);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
         transform: scale(1.05);
-        box-shadow: 0 5px 20px rgba(0, 255, 255, 0.4);
     }
     
-    .stSlider > div > div > div {
-        background: linear-gradient(90deg, #0080ff, #00ffff);
+    .slider-container {
+        background: rgba(0, 30, 60, 0.5);
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
     }
     
     /* Hide Streamlit branding */
@@ -114,385 +119,507 @@ st.markdown("""
     }
     
     ::-webkit-scrollbar-track {
-        background: rgba(20, 20, 60, 0.5);
+        background: rgba(0, 50, 100, 0.3);
         border-radius: 4px;
     }
     
     ::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #0080ff, #00ffff);
+        background: linear-gradient(180deg, #00ffff, #ff00ff);
         border-radius: 4px;
+    }
+    
+    /* Animation for gravity wells */
+    @keyframes pulse {
+        0% { opacity: 0.7; }
+        50% { opacity: 1; }
+        100% { opacity: 0.7; }
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== SPACETIME PHYSICS ENGINE ====================
-class SpacetimeEngine:
-    """Einstein-inspired personal time perception optimizer"""
+# ==================== GRAVITY PHYSICS ENGINE ====================
+class CognitiveGravityEngine:
+    """Einstein-inspired attention gravity simulator"""
     
     def __init__(self):
-        self.time_dilation_constant = 0.01
-        self.temporal_curvature_factor = 0.5
-        self.causal_radius = 7  # days
-    
+        self.G = 6.67430e-11  # Gravitational constant (for scaling)
+        self.c = 299792458    # Speed of light (for relativity effects)
+        self.time_step = 0.1   # Simulation time step
+        
     @staticmethod
     @st.cache_data(ttl=3600)
-    def calculate_time_dilation(stress_level, focus_level):
-        """Calculate subjective time dilation (relativity-inspired)"""
+    def calculate_mental_mass(emotional_intensity, importance, dwell_time):
+        """Calculate cognitive mass: M = EI × I × ln(DT+1)"""
         try:
-            # Based on: perceived_time = actual_time * (1 + k*(stress - focus))
-            dilation_factor = 1 + 0.01 * (stress_level - focus_level)
-            return max(0.5, min(2.0, dilation_factor))
+            # Emotional intensity (0-10), importance (0-10), dwell_time in minutes
+            mass = emotional_intensity * importance * np.log(dwell_time + 1)
+            return max(0.1, min(100.0, mass))
         except:
-            return 1.0
+            return 5.0
     
     @staticmethod
     @st.cache_data(ttl=3600)
-    def calculate_temporal_curvature(emotion_valence, energy_level):
-        """Calculate how emotions bend future planning (spacetime curvature)"""
+    def compute_gravity_force(mass1, mass2, distance):
+        """Newton's law of universal gravitation: F = G * (m1*m2)/r²"""
         try:
-            # Positive emotions create "gravitational wells" in future planning
-            curvature = 0.5 * emotion_valence + 0.3 * (energy_level - 5)
-            return curvature / 10  # Normalize to [-1, 1]
+            G = 1.0  # Normalized gravitational constant
+            force = G * (mass1 * mass2) / (distance**2 + 0.01)  # Avoid division by zero
+            return force
         except:
             return 0.0
     
     @staticmethod
     @st.cache_data(ttl=3600)
-    def compute_causal_light_cone(decisions_data, current_mood):
-        """Calculate decision impact radius (light cone of causality)"""
+    def calculate_escape_velocity(mass, radius):
+        """Calculate velocity needed to escape mental orbit: v = √(2GM/r)"""
         try:
-            if len(decisions_data) < 3:
-                return 3.0  # Default radius in days
-            
-            # Impact radius based on decision consistency and current state
-            consistency = np.std([d['quality'] for d in decisions_data[-5:]]) if len(decisions_data) >= 5 else 1.0
-            mood_factor = 1 + (current_mood - 5) / 10
-            
-            radius = max(1.0, min(14.0, 7.0 / (consistency + 0.1) * mood_factor))
-            return radius
+            G = 1.0
+            if radius <= 0:
+                radius = 0.1
+            velocity = np.sqrt(2 * G * mass / radius)
+            return velocity
         except:
-            return 7.0
+            return 1.0
     
     @staticmethod
     @st.cache_data(ttl=3600)
-    def optimize_timing(task_importance, task_difficulty, personal_rhythm):
-        """Suggest optimal timing using spacetime optimization"""
+    def predict_orbit_period(mass, semi_major_axis):
+        """Kepler's third law: T² ∝ a³/M (simplified)"""
         try:
-            # Spacetime optimization algorithm
-            base_score = task_importance * (1 - task_difficulty/10)
-            rhythm_adjustment = 1 + (personal_rhythm - 5) / 10
+            # Simplified version: T = k * sqrt(a³/M)
+            period = 2 * np.pi * np.sqrt(semi_major_axis**3 / (mass + 0.1))
+            return period  # In arbitrary time units
+        except:
+            return 10.0
+    
+    @staticmethod
+    @st.cache_data(ttl=3600)
+    def generate_gravitational_field(mental_objects, grid_size=20):
+        """Generate 2D gravitational potential field"""
+        try:
+            # Create coordinate grid
+            x = np.linspace(-10, 10, grid_size)
+            y = np.linspace(-10, 10, grid_size)
+            X, Y = np.meshgrid(x, y)
             
-            # Convert to hours from now (0-48 hours)
-            optimal_hours = 24 * (1 - base_score * rhythm_adjustment)
-            optimal_hours = max(1, min(48, optimal_hours))
+            # Initialize potential
+            potential = np.zeros_like(X)
             
-            return {
-                'hours_from_now': optimal_hours,
-                'confidence': min(0.95, base_score * 0.8),
-                'reason': f"Optimal spacetime coordinate based on importance-weight={task_importance}, difficulty-curvature={task_difficulty}"
-            }
+            # Add contribution from each mental object
+            for obj in mental_objects:
+                if len(obj) >= 4:  # Ensure we have x, y, mass
+                    x0, y0, mass = obj[1], obj[2], obj[3]
+                    distance = np.sqrt((X - x0)**2 + (Y - y0)**2 + 0.01)
+                    potential -= mass / distance
+            
+            return X, Y, potential
         except Exception as e:
-            return {'hours_from_now': 24, 'confidence': 0.5, 'reason': 'Using default spacetime metric'}
+            # Return default field
+            x = np.linspace(-10, 10, 20)
+            y = np.linspace(-10, 10, 20)
+            X, Y = np.meshgrid(x, y)
+            potential = -1 / (np.sqrt(X**2 + Y**2) + 0.1)
+            return X, Y, potential
+    
+    @staticmethod
+    @st.cache_data(ttl=3600)
+    def simulate_attention_trajectory(start_pos, mental_objects, steps=100):
+        """Simulate attention drift in cognitive gravity field"""
+        try:
+            trajectory = [start_pos]
+            current_pos = np.array(start_pos, dtype=float)
+            
+            for _ in range(steps):
+                total_force = np.zeros(2)
+                
+                # Calculate force from each mental object
+                for obj in mental_objects:
+                    if len(obj) >= 4:
+                        obj_pos = np.array([obj[1], obj[2]])
+                        obj_mass = obj[3]
+                        
+                        # Vector from object to current position
+                        r_vec = current_pos - obj_pos
+                        distance = np.linalg.norm(r_vec) + 0.01
+                        
+                        # Force direction (toward object)
+                        force_dir = -r_vec / distance
+                        
+                        # Force magnitude
+                        force_mag = CognitiveGravityEngine.compute_gravity_force(
+                            1.0,  # Unit attention mass
+                            obj_mass,
+                            distance
+                        )
+                        
+                        total_force += force_dir * force_mag
+                
+                # Update position (Euler integration)
+                current_pos += total_force * 0.1
+                trajectory.append(current_pos.copy())
+                
+                # Boundary check
+                current_pos = np.clip(current_pos, -12, 12)
+            
+            return np.array(trajectory)
+        except:
+            # Return simple circular trajectory
+            t = np.linspace(0, 2*np.pi, 100)
+            return np.column_stack([np.cos(t)*5, np.sin(t)*5])
 
 # ==================== SESSION STATE INITIALIZATION ====================
-if 'spacetime_data' not in st.session_state:
-    st.session_state.spacetime_data = {
+if 'mind_gravity_data' not in st.session_state:
+    st.session_state.mind_gravity_data = {
         'timestamps': [],
-        'time_perception': [],  # 0-100: 0=time frozen, 100=time flying
-        'stress_level': [],     # 0-10
-        'focus_level': [],      # 0-10
-        'emotion_valence': [],  # -5 to +5
-        'energy_level': [],     # 0-10
-        'activities': [],
-        'decisions': []  # List of {'task': str, 'quality': 0-10, 'timestamp': datetime}
+        'mental_objects': [],  # List of [name, x, y, mass, color, category]
+        'attention_trajectories': [],
+        'gravity_scores': [],
+        'escape_velocities': []
     }
 
-if 'engine' not in st.session_state:
-    st.session_state.engine = SpacetimeEngine()
+if 'gravity_engine' not in st.session_state:
+    st.session_state.gravity_engine = CognitiveGravityEngine()
 
-# ==================== SIDEBAR - DAILY CHECK-IN ====================
+# ==================== SIDEBAR - MIND OBJECT INPUT ====================
 with st.sidebar:
     st.markdown("""
     <div style='text-align: center; padding: 20px 0;'>
-        <h2 style='color: #00ffff;'>⏳ DAILY SPACETIME CHECK-IN</h2>
-        <p style='color: #aaaaff;'>Einstein: "Time is relative to your experience"</p>
+        <h2 style='color: #00ffff;'>🌀 ADD MENTAL OBJECTS</h2>
+        <p style='color: #aaaaff;'>Each thought has gravity. Map yours.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Current time perception
-    st.markdown("#### How fast is time moving?")
-    time_perception = st.slider(
-        "0 = Frozen | 100 = Flying",
-        0, 100, 50,
-        key="time_slider",
-        help="Your subjective experience of time's flow"
-    )
-    
-    # Stress and focus
+    # Object 1
+    st.markdown("#### 🧠 Mental Object 1")
+    obj1_name = st.text_input("Name", "Work Deadline", key="obj1_name")
     col1, col2 = st.columns(2)
     with col1:
-        stress = st.slider("Stress", 0, 10, 5, help="Stress causes time dilation")
+        obj1_emotion = st.slider("Emotional Charge", 0, 10, 7, key="obj1_emo")
     with col2:
-        focus = st.slider("Focus", 0, 10, 5, help="Focus alters time perception")
+        obj1_importance = st.slider("Importance", 0, 10, 8, key="obj1_imp")
+    obj1_dwell = st.slider("Dwell Time (min)", 0, 120, 45, key="obj1_dwell")
     
-    # Emotion and energy
-    st.markdown("#### Emotional Spacetime Curvature")
-    emotion = st.slider("Emotion (-5 to +5)", -5, 5, 0, 
-                       help="Negative emotions bend time forward, positive bend it backward")
-    energy = st.slider("Energy Level", 0, 10, 5, help="Energy affects temporal resolution")
+    st.markdown("---")
     
-    # Activity type
-    activity = st.selectbox(
-        "Primary Activity",
-        ["Deep Work", "Meetings", "Creative", "Learning", "Resting", "Social", "Physical", "Other"],
-        help="Activity type creates different spacetime geometries"
-    )
+    # Object 2
+    st.markdown("#### 🧠 Mental Object 2")
+    obj2_name = st.text_input("Name", "Personal Worry", key="obj2_name")
+    col1, col2 = st.columns(2)
+    with col1:
+        obj2_emotion = st.slider("Emotional Charge", 0, 10, 6, key="obj2_emo")
+    with col2:
+        obj2_importance = st.slider("Importance", 0, 10, 4, key="obj2_imp")
+    obj2_dwell = st.slider("Dwell Time (min)", 0, 120, 30, key="obj2_dwell")
     
-    # Submit button
-    if st.button("📡 Record Spacetime Coordinates", use_container_width=True):
+    st.markdown("---")
+    
+    # Object 3
+    st.markdown("#### 🧠 Mental Object 3")
+    obj3_name = st.text_input("Name", "Creative Project", key="obj3_name")
+    col1, col2 = st.columns(2)
+    with col1:
+        obj3_emotion = st.slider("Emotional Charge", 0, 10, 8, key="obj3_emo")
+    with col2:
+        obj3_importance = st.slider("Importance", 0, 10, 7, key="obj3_imp")
+    obj3_dwell = st.slider("Dwell Time (min)", 0, 120, 20, key="obj3_dwell")
+    
+    st.markdown("---")
+    
+    # Calculate and add objects
+    if st.button("⚡ CALCULATE GRAVITY FIELD", use_container_width=True):
         timestamp = datetime.now()
         
-        # Store data
-        st.session_state.spacetime_data['timestamps'].append(timestamp)
-        st.session_state.spacetime_data['time_perception'].append(time_perception)
-        st.session_state.spacetime_data['stress_level'].append(stress)
-        st.session_state.spacetime_data['focus_level'].append(focus)
-        st.session_state.spacetime_data['emotion_valence'].append(emotion)
-        st.session_state.spacetime_data['energy_level'].append(energy)
-        st.session_state.spacetime_data['activities'].append(activity)
+        # Calculate mental masses
+        mass1 = st.session_state.gravity_engine.calculate_mental_mass(
+            obj1_emotion, obj1_importance, obj1_dwell
+        )
+        mass2 = st.session_state.gravity_engine.calculate_mental_mass(
+            obj2_emotion, obj2_importance, obj2_dwell
+        )
+        mass3 = st.session_state.gravity_engine.calculate_mental_mass(
+            obj3_emotion, obj3_importance, obj3_dwell
+        )
         
-        # Calculate metrics
-        dilation = st.session_state.engine.calculate_time_dilation(stress, focus)
-        curvature = st.session_state.engine.calculate_temporal_curvature(emotion, energy)
+        # Assign positions (x, y coordinates in mental space)
+        # Positive emotion = right, negative = left
+        # Importance = vertical position
+        positions = [
+            [obj1_name, 2, 3, mass1, '#ff4444', 'Stress'],
+            [obj2_name, -3, 1, mass2, '#44ff44', 'Worry'],
+            [obj3_name, 0, 5, mass3, '#4444ff', 'Passion']
+        ]
+        
+        # Store data
+        st.session_state.mind_gravity_data['timestamps'].append(timestamp)
+        st.session_state.mind_gravity_data['mental_objects'].append(positions)
+        
+        # Calculate gravity metrics
+        gravity_force = st.session_state.gravity_engine.compute_gravity_force(mass1, mass2, 5.0)
+        escape_vel = st.session_state.gravity_engine.calculate_escape_velocity(mass1, 2.0)
+        
+        st.session_state.mind_gravity_data['gravity_scores'].append(gravity_force)
+        st.session_state.mind_gravity_data['escape_velocities'].append(escape_vel)
         
         st.success(f"""
-        ✅ Spacetime coordinates recorded!
+        ✅ Gravity Field Updated!
         
-        **Time Dilation:** {dilation:.2f}x
-        **Temporal Curvature:** {curvature:.3f}
+        **Mental Masses Calculated:**
+        • {obj1_name}: {mass1:.1f} units
+        • {obj2_name}: {mass2:.1f} units  
+        • {obj3_name}: {mass3:.1f} units
         
-        *"The only reason for time is so that everything doesn't happen at once."*
+        **Strongest Attractor:** {positions[np.argmax([mass1, mass2, mass3])][0]}
+        
+        *"Gravity explains the motions of the planets, but it cannot explain who sets the planets in motion."*
         """)
     
     st.markdown("---")
     
     # Data management
-    st.markdown("#### 🗃️ Spacetime Archive")
-    if st.button("Export My Spacetime Data", use_container_width=True):
-        df = pd.DataFrame(st.session_state.spacetime_data)
+    st.markdown("#### 🗃️ Gravity Archives")
+    if st.button("Export Cognitive Field Data", use_container_width=True):
+        # Create export dataframe
+        export_data = []
+        for i, positions in enumerate(st.session_state.mind_gravity_data['mental_objects']):
+            for obj in positions:
+                export_data.append({
+                    'timestamp': st.session_state.mind_gravity_data['timestamps'][i],
+                    'object_name': obj[0],
+                    'x_position': obj[1],
+                    'y_position': obj[2],
+                    'mass': obj[3],
+                    'category': obj[5]
+                })
+        
+        df = pd.DataFrame(export_data)
         csv = df.to_csv(index=False)
         st.download_button(
             label="Download CSV",
             data=csv,
-            file_name=f"chronosphere_data_{datetime.now().strftime('%Y%m%d')}.csv",
+            file_name=f"mind_gravity_data_{datetime.now().strftime('%Y%m%d')}.csv",
             mime="text/csv"
         )
     
-    if st.button("Reset Spacetime Continuum", type="secondary", use_container_width=True):
-        st.session_state.spacetime_data = {
+    if st.button("Reset Gravity Field", type="secondary", use_container_width=True):
+        st.session_state.mind_gravity_data = {
             'timestamps': [],
-            'time_perception': [],
-            'stress_level': [],
-            'focus_level': [],
-            'emotion_valence': [],
-            'energy_level': [],
-            'activities': [],
-            'decisions': []
+            'mental_objects': [],
+            'attention_trajectories': [],
+            'gravity_scores': [],
+            'escape_velocities': []
         }
         st.rerun()
     
     st.markdown("---")
     
     # Stats
-    if len(st.session_state.spacetime_data['timestamps']) > 0:
-        days_tracked = len(set([d.date() for d in st.session_state.spacetime_data['timestamps']]))
-        avg_perception = np.mean(st.session_state.spacetime_data['time_perception'])
+    if len(st.session_state.mind_gravity_data['timestamps']) > 0:
+        total_objects = sum(len(objs) for objs in st.session_state.mind_gravity_data['mental_objects'])
+        avg_mass = np.mean([mass for objs in st.session_state.mind_gravity_data['mental_objects'] 
+                           for obj in objs for mass in [obj[3]]])
+        
         st.markdown(f"""
-        <div style='background: rgba(0, 100, 255, 0.2); padding: 15px; border-radius: 10px;'>
-            <p style='margin: 0;'><strong>📊 Spacetime Statistics</strong></p>
-            <p style='margin: 5px 0;'>Days Tracked: {days_tracked}</p>
-            <p style='margin: 5px 0;'>Avg Time Perception: {avg_perception:.1f}/100</p>
-            <p style='margin: 5px 0;'>Data Points: {len(st.session_state.spacetime_data['timestamps'])}</p>
+        <div style='background: rgba(0, 100, 200, 0.2); padding: 15px; border-radius: 10px;'>
+            <p style='margin: 0;'><strong>📊 Field Statistics</strong></p>
+            <p style='margin: 5px 0;'>Total Observations: {len(st.session_state.mind_gravity_data['timestamps'])}</p>
+            <p style='margin: 5px 0;'>Mental Objects: {total_objects}</p>
+            <p style='margin: 5px 0;'>Avg Mental Mass: {avg_mass:.1f}</p>
         </div>
         """, unsafe_allow_html=True)
 
 # ==================== MAIN DASHBOARD ====================
-st.markdown("<h1 class='spacetime-title'>⏳ CHRONOSPHERE</h1>", unsafe_allow_html=True)
-st.markdown("<p class='einstein-quote'>\"The distinction between past, present and future is only a stubbornly persistent illusion.\" — Albert Einstein</p>", unsafe_allow_html=True)
+st.markdown("<h1 class='gravity-title'>🌀 MIND-GRAVITY FIELD MAPPER</h1>", unsafe_allow_html=True)
+st.markdown("<p class='einstein-quote'>\"Gravity is not responsible for people falling in love.\" — Albert Einstein</p>", unsafe_allow_html=True)
 
-# Check if we have enough data
-if len(st.session_state.spacetime_data['timestamps']) < 3:
+# Check if we have data
+if len(st.session_state.mind_gravity_data['mental_objects']) == 0:
     st.info("""
-    ## 🚀 Welcome to Your Personal Spacetime
+    ## 🚀 Welcome to Your Cognitive Gravity Field
     
-    **Record 3+ daily check-ins to unlock your spacetime visualization.** 
+    **Add mental objects to visualize your attention gravity.** 
     
-    This app merges Einstein's relativity with your subjective time experience:
-    1. **Time Dilation**: How stress/focus alters your time perception
-    2. **Temporal Curvature**: How emotions bend your future planning
-    3. **Causal Light Cones**: Your decision impact radius
+    This app applies Einstein's gravity physics to your mind:
+    1. **Mental Mass**: Emotional charge × importance × dwell time
+    2. **Gravity Wells**: Thoughts that pull your attention
+    3. **Escape Velocity**: Energy needed to break thought loops
+    4. **Attention Orbits**: Predictable thought recurrence patterns
     
-    *Start by completing today's check-in in the sidebar →*
+    *Start by adding 3 mental objects in the sidebar →*
     """)
     
     # Demo visualization
     col1, col2, col3 = st.columns(3)
     with col1:
         st.markdown("""
-        <div class='metric-card'>
-            <h3>⏱️ Time Dilation</h3>
-            <p>Stress slows time, focus speeds it up</p>
-            <div class='time-dilation-indicator'></div>
-            <p><em>Your personal relativity</em></p>
+        <div class='gravity-card'>
+            <h3>⚫ Mental Black Holes</h3>
+            <p>Thoughts with escape velocity > focus energy</p>
+            <div class='field-line'></div>
+            <div class='pulse' style='text-align: center; font-size: 3rem;'>⚫</div>
+            <p><em>High-gravity thoughts</em></p>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("""
-        <div class='metric-card'>
-            <h3>🌀 Temporal Curvature</h3>
-            <p>Emotions bend your timeline</p>
-            <div style='text-align: center; font-size: 2rem;'>∞</div>
-            <p><em>Spacetime geometry</em></p>
+        <div class='gravity-card'>
+            <h3>🔄 Attention Orbits</h3>
+            <p>Predictable thought recurrence patterns</p>
+            <div class='field-line'></div>
+            <div style='text-align: center; font-size: 3rem;'>🔄</div>
+            <p><em>Kepler's laws of cognition</em></p>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
         st.markdown("""
-        <div class='metric-card'>
-            <h3>🔦 Causal Radius</h3>
-            <p>How far ahead you effectively plan</p>
-            <div style='text-align: center; font-size: 2rem;'>7d</div>
-            <p><em>Light cone of influence</em></p>
+        <div class='gravity-card'>
+            <h3>🚀 Escape Training</h3>
+            <p>Build focus to break gravity wells</p>
+            <div class='field-line'></div>
+            <div style='text-align: center; font-size: 3rem;'>🚀</div>
+            <p><em>v = √(2GM/r)</em></p>
         </div>
         """, unsafe_allow_html=True)
     
     st.stop()
 
-# ==================== SPACETIME VISUALIZATION ====================
+# ==================== GRAVITY VISUALIZATION ====================
 try:
-    # Prepare data
-    df = pd.DataFrame({
-        'timestamp': st.session_state.spacetime_data['timestamps'],
-        'time_perception': st.session_state.spacetime_data['time_perception'],
-        'stress': st.session_state.spacetime_data['stress_level'],
-        'focus': st.session_state.spacetime_data['focus_level'],
-        'emotion': st.session_state.spacetime_data['emotion_valence'],
-        'energy': st.session_state.spacetime_data['energy_level'],
-        'activity': st.session_state.spacetime_data['activities']
-    })
+    # Get latest mental objects
+    latest_objects = st.session_state.mind_gravity_data['mental_objects'][-1]
     
-    df['date'] = pd.to_datetime(df['timestamp']).dt.date
-    df['time_of_day'] = pd.to_datetime(df['timestamp']).dt.hour + pd.to_datetime(df['timestamp']).dt.minute/60
+    # Extract data for visualization
+    object_names = [obj[0] for obj in latest_objects]
+    x_positions = [obj[1] for obj in latest_objects]
+    y_positions = [obj[2] for obj in latest_objects]
+    masses = [obj[3] for obj in latest_objects]
+    colors = [obj[4] for obj in latest_objects]
+    categories = [obj[5] for obj in latest_objects]
     
-    # Calculate derived metrics
-    df['time_dilation'] = df.apply(
-        lambda row: st.session_state.engine.calculate_time_dilation(row['stress'], row['focus']), 
-        axis=1
-    )
-    df['temporal_curvature'] = df.apply(
-        lambda row: st.session_state.engine.calculate_temporal_curvature(row['emotion'], row['energy']), 
-        axis=1
-    )
+    # Calculate metrics
+    strongest_idx = np.argmax(masses)
+    weakest_idx = np.argmin(masses)
     
-    # Current light cone radius
-    current_mood = df.iloc[-1]['emotion'] if len(df) > 0 else 5
-    light_cone_radius = st.session_state.engine.compute_causal_light_cone(
-        st.session_state.spacetime_data['decisions'],
-        current_mood
-    )
+    # Calculate distances between objects
+    distances = []
+    for i in range(len(latest_objects)):
+        for j in range(i+1, len(latest_objects)):
+            dist = np.sqrt((x_positions[i]-x_positions[j])**2 + (y_positions[i]-y_positions[j])**2)
+            gravity = st.session_state.gravity_engine.compute_gravity_force(masses[i], masses[j], dist)
+            distances.append((object_names[i], object_names[j], dist, gravity))
     
     # ==================== METRICS DASHBOARD ====================
-    st.markdown("## 📊 Your Personal Spacetime Metrics")
+    st.markdown("## 📊 Your Cognitive Gravity Metrics")
     
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        avg_dilation = df['time_dilation'].mean()
-        dilation_status = "SLOWED" if avg_dilation < 0.9 else "NORMAL" if avg_dilation < 1.1 else "ACCELERATED"
-        dilation_color = "#ff4444" if avg_dilation < 0.9 else "#44ff44" if avg_dilation < 1.1 else "#4444ff"
+        total_mass = sum(masses)
         st.markdown(f"""
-        <div class='metric-card'>
-            <h3>⏱️ Time Dilation</h3>
-            <h2 style='color: {dilation_color};'>{avg_dilation:.2f}x</h2>
-            <p>{dilation_status}</p>
-            <div class='time-dilation-indicator' style='opacity: {abs(avg_dilation-1)+0.3};'></div>
+        <div class='gravity-card'>
+            <h3>⚖️ Total Mental Mass</h3>
+            <h2 style='color: #ff4444;'>{total_mass:.1f}</h2>
+            <p>Sum of all cognitive objects</p>
+            <div class='field-line'></div>
+            <p><em>Higher = more attention demand</em></p>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
-        avg_curvature = df['temporal_curvature'].mean()
-        curvature_dir = "FORWARD-BENT" if avg_curvature < -0.1 else "FLAT" if abs(avg_curvature) < 0.1 else "BACKWARD-BENT"
-        curvature_color = "#ff4444" if avg_curvature < -0.1 else "#44ff44" if abs(avg_curvature) < 0.1 else "#4444ff"
+        strongest_escape = st.session_state.gravity_engine.calculate_escape_velocity(
+            masses[strongest_idx], 2.0
+        )
         st.markdown(f"""
-        <div class='metric-card'>
-            <h3>🌀 Temporal Curvature</h3>
-            <h2 style='color: {curvature_color};'>{avg_curvature:.3f}</h2>
-            <p>{curvature_dir}</p>
-            <div style='text-align: center; font-size: 2rem;'>↷</div>
+        <div class='gravity-card'>
+            <h3>🚀 Escape Velocity</h3>
+            <h2 style='color: #44ff44;'>{strongest_escape:.1f}</h2>
+            <p>To break from: {object_names[strongest_idx][:15]}...</p>
+            <div class='field-line'></div>
+            <p><em>v = √(2GM/r)</em></p>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
-        avg_perception = df['time_perception'].mean()
-        perception_status = "FROZEN" if avg_perception < 30 else "SLOW" if avg_perception < 45 else "NORMAL" if avg_perception < 70 else "FAST"
+        if len(distances) > 0:
+            max_gravity = max(distances, key=lambda x: x[3])[3]
+        else:
+            max_gravity = 0
+        
         st.markdown(f"""
-        <div class='metric-card'>
-            <h3>📈 Time Perception</h3>
-            <h2 style='color: #00ffff;'>{avg_perception:.0f}/100</h2>
-            <p>{perception_status}</p>
-            <progress value="{avg_perception}" max="100" style="width: 100%; height: 10px;"></progress>
+        <div class='gravity-card'>
+            <h3>💫 Max Gravity Force</h3>
+            <h2 style='color: #4444ff;'>{max_gravity:.2f}</h2>
+            <p>Between two thoughts</p>
+            <div class='field-line'></div>
+            <p><em>F = G(m₁m₂)/r²</em></p>
         </div>
         """, unsafe_allow_html=True)
     
     with col4:
+        orbit_period = st.session_state.gravity_engine.predict_orbit_period(
+            masses[strongest_idx], 5.0
+        )
         st.markdown(f"""
-        <div class='metric-card'>
-            <h3>🔦 Causal Radius</h3>
-            <h2 style='color: #ffaa00;'>{light_cone_radius:.1f} days</h2>
-            <p>Effective planning horizon</p>
-            <div style='text-align: center;'>
-                <div style='display: inline-block; width: {light_cone_radius*5}px; height: {light_cone_radius*5}px; border-radius: 50%; border: 2px solid #ffaa00;'></div>
-            </div>
+        <div class='gravity-card'>
+            <h3>🔄 Orbit Period</h3>
+            <h2 style='color: #ff44ff;'>{orbit_period:.1f} units</h2>
+            <p>Thought recurrence time</p>
+            <div class='field-line'></div>
+            <p><em>T² ∝ a³/M</em></p>
         </div>
         """, unsafe_allow_html=True)
     
     # ==================== VISUALIZATIONS ====================
-    st.markdown("## 🌌 Spacetime Visualization")
+    st.markdown("## 🌌 Your Cognitive Gravity Field")
     
-    tab1, tab2, tab3 = st.tabs(["3D Spacetime", "Time Perception Trends", "Activity Analysis"])
+    tab1, tab2, tab3 = st.tabs(["3D Gravity Wells", "Attention Network", "Field Simulation"])
     
     with tab1:
-        # 3D Spacetime Plot
-        fig = go.Figure(data=[go.Scatter3d(
-            x=df['time_of_day'],
-            y=df['time_perception'],
-            z=df['emotion'],
-            mode='markers+lines',
-            marker=dict(
-                size=8,
-                color=df['energy'],
+        # 3D surface plot of gravitational potential
+        X, Y, Z = st.session_state.gravity_engine.generate_gravitational_field([
+            [obj[0], obj[1], obj[2], obj[3]] for obj in latest_objects
+        ])
+        
+        fig = go.Figure(data=[
+            go.Surface(
+                x=X, y=Y, z=Z,
                 colorscale='Viridis',
-                showscale=True,
-                colorbar=dict(title="Energy Level")
+                contours={
+                    "z": {"show": True, "usecolormap": True, "highlightcolor": "limegreen", "project": {"z": True}}
+                },
+                opacity=0.8
             ),
-            line=dict(
-                color='rgba(100, 100, 255, 0.3)',
-                width=2
-            ),
-            text=df['activity'],
-            hovertemplate='<b>%{text}</b><br>Time: %{x:.1f}h<br>Perception: %{y}<br>Emotion: %{z}<extra></extra>'
-        )])
+            go.Scatter3d(
+                x=x_positions,
+                y=y_positions,
+                z=[-5]*len(x_positions),  # Place objects at bottom
+                mode='markers+text',
+                marker=dict(
+                    size=[m*2 for m in masses],  # Size proportional to mass
+                    color=colors,
+                    opacity=0.9,
+                    line=dict(color='white', width=2)
+                ),
+                text=object_names,
+                textposition="top center",
+                hoverinfo='text'
+            )
+        ])
         
         fig.update_layout(
-            title="Your Personal Spacetime (Time vs Perception vs Emotion)",
+            title="Your Mental Gravity Wells (Negative Potential = Attraction)",
             scene=dict(
-                xaxis_title='Time of Day',
-                yaxis_title='Time Perception',
-                zaxis_title='Emotion (-5 to +5)',
-                bgcolor='rgba(10, 10, 30, 0.8)'
+                xaxis_title='Emotional Valence (-left to +right)',
+                yaxis_title='Importance (low to high)',
+                zaxis_title='Gravitational Potential',
+                bgcolor='rgba(0, 20, 40, 0.8)'
             ),
-            height=600,
+            height=700,
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             font_color='#e6e6e6'
@@ -501,168 +628,314 @@ try:
         st.plotly_chart(fig, use_container_width=True)
     
     with tab2:
-        # Time perception over time
-        df_sorted = df.sort_values('timestamp')
+        # Network graph of mental objects
+        G = nx.Graph()
         
-        chart = alt.Chart(df_sorted).mark_line(point=True).encode(
-            x=alt.X('timestamp:T', title='Date'),
-            y=alt.Y('time_perception:Q', title='Time Perception (0-100)', scale=alt.Scale(domain=[0, 100])),
-            color=alt.value('#00ffff'),
-            tooltip=['timestamp', 'time_perception', 'activity']
-        ).properties(
-            title='Your Time Perception Journey',
-            height=400
-        ).configure(
-            background='rgba(0,0,0,0)'
-        ).configure_axis(
-            gridColor='rgba(100, 100, 100, 0.3)',
-            labelColor='#e6e6e6',
-            titleColor='#e6e6e6'
+        # Add nodes
+        for i, (name, mass) in enumerate(zip(object_names, masses)):
+            G.add_node(i, label=name, mass=mass, color=colors[i])
+        
+        # Add edges with gravity as weight
+        for i in range(len(latest_objects)):
+            for j in range(i+1, len(latest_objects)):
+                dist = np.sqrt((x_positions[i]-x_positions[j])**2 + (y_positions[i]-y_positions[j])**2)
+                gravity = st.session_state.gravity_engine.compute_gravity_force(masses[i], masses[j], dist)
+                if gravity > 0.1:  # Only show significant connections
+                    G.add_edge(i, j, weight=gravity*10, label=f"{gravity:.2f}")
+        
+        # Create network visualization
+        pos = nx.spring_layout(G, weight='weight', seed=42)
+        
+        edge_trace = []
+        for edge in G.edges(data=True):
+            x0, y0 = pos[edge[0]]
+            x1, y1 = pos[edge[1]]
+            edge_trace.append(go.Scatter(
+                x=[x0, x1, None], y=[y0, y1, None],
+                line=dict(width=edge[2]['weight'], color='rgba(100, 100, 255, 0.6)'),
+                hoverinfo='none',
+                mode='lines'
+            ))
+        
+        node_trace = go.Scatter(
+            x=[pos[node][0] for node in G.nodes()],
+            y=[pos[node][1] for node in G.nodes()],
+            mode='markers+text',
+            marker=dict(
+                size=[G.nodes[node]['mass']*5 for node in G.nodes()],
+                color=[G.nodes[node]['color'] for node in G.nodes()],
+                line=dict(color='white', width=2)
+            ),
+            text=[G.nodes[node]['label'] for node in G.nodes()],
+            textposition="top center",
+            hoverinfo='text'
         )
         
-        st.altair_chart(chart, use_container_width=True)
+        fig = go.Figure(data=edge_trace + [node_trace])
         
-        # Dilation vs curvature scatter
-        scatter = alt.Chart(df).mark_circle(size=100).encode(
-            x=alt.X('time_dilation:Q', title='Time Dilation Factor'),
-            y=alt.Y('temporal_curvature:Q', title='Temporal Curvature'),
-            color=alt.Color('energy:Q', scale=alt.Scale(scheme='viridis')),
-            tooltip=['activity', 'time_dilation', 'temporal_curvature', 'emotion']
-        ).properties(
-            title='Dilation vs Curvature: Your Spacetime Geometry',
-            height=400
+        fig.update_layout(
+            title="Attention Network (Edge thickness = Gravity strength)",
+            showlegend=False,
+            hovermode='closest',
+            height=600,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font_color='#e6e6e6',
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
         )
         
-        st.altair_chart(scatter, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
     
     with tab3:
-        # Activity analysis
-        activity_counts = df['activity'].value_counts().reset_index()
-        activity_counts.columns = ['activity', 'count']
+        # Attention trajectory simulation
+        st.markdown("#### 🎯 Simulate Attention Drift")
         
-        bar_chart = alt.Chart(activity_counts).mark_bar().encode(
-            x=alt.X('count:Q', title='Frequency'),
-            y=alt.Y('activity:N', title='Activity Type', sort='-x'),
-            color=alt.value('#0080ff'),
-            tooltip=['activity', 'count']
-        ).properties(
-            title='Activities in Your Spacetime',
-            height=400
-        )
+        col1, col2 = st.columns([1, 2])
         
-        st.altair_chart(bar_chart, use_container_width=True)
+        with col1:
+            start_x = st.slider("Start X", -10.0, 10.0, 0.0, key="start_x")
+            start_y = st.slider("Start Y", -10.0, 10.0, 0.0, key="start_y")
+            
+            if st.button("🌀 Simulate Attention Path", use_container_width=True):
+                # Convert latest objects to format expected by simulator
+                mental_objects_formatted = []
+                for obj in latest_objects:
+                    mental_objects_formatted.append([obj[0], obj[1], obj[2], obj[3]])
+                
+                # Simulate trajectory
+                trajectory = st.session_state.gravity_engine.simulate_attention_trajectory(
+                    [start_x, start_y],
+                    mental_objects_formatted
+                )
+                
+                # Store trajectory
+                st.session_state.mind_gravity_data['attention_trajectories'].append(trajectory)
+            
+            # Display latest trajectory info
+            if len(st.session_state.mind_gravity_data['attention_trajectories']) > 0:
+                latest_traj = st.session_state.mind_gravity_data['attention_trajectories'][-1]
+                st.metric("Trajectory Length", f"{len(latest_traj)} steps")
+                
+                # Find which object it ends closest to
+                if len(latest_traj) > 0:
+                    end_pos = latest_traj[-1]
+                    distances = []
+                    for obj in latest_objects:
+                        dist = np.sqrt((end_pos[0]-obj[1])**2 + (end_pos[1]-obj[2])**2)
+                        distances.append(dist)
+                    
+                    closest_idx = np.argmin(distances)
+                    st.metric("Ends Near", object_names[closest_idx])
         
-        # Activity vs time perception
-        box_chart = alt.Chart(df).mark_boxplot().encode(
-            x=alt.X('activity:N', title='Activity Type'),
-            y=alt.Y('time_perception:Q', title='Time Perception'),
-            color=alt.value('#00ffff')
-        ).properties(
-            title='How Activities Affect Your Time Perception',
-            height=400
-        )
-        
-        st.altair_chart(box_chart, use_container_width=True)
+        with col2:
+            # Plot trajectory
+            if len(st.session_state.mind_gravity_data['attention_trajectories']) > 0:
+                trajectory = st.session_state.mind_gravity_data['attention_trajectories'][-1]
+                
+                fig = go.Figure()
+                
+                # Add mental objects
+                fig.add_trace(go.Scatter(
+                    x=x_positions,
+                    y=y_positions,
+                    mode='markers+text',
+                    marker=dict(
+                        size=[m*10 for m in masses],
+                        color=colors,
+                        opacity=0.8,
+                        line=dict(color='white', width=2)
+                    ),
+                    text=object_names,
+                    textposition="top center",
+                    name="Mental Objects"
+                ))
+                
+                # Add trajectory
+                fig.add_trace(go.Scatter(
+                    x=trajectory[:, 0],
+                    y=trajectory[:, 1],
+                    mode='lines+markers',
+                    line=dict(color='cyan', width=2),
+                    marker=dict(size=4, color='white'),
+                    name="Attention Path"
+                ))
+                
+                # Add starting point
+                fig.add_trace(go.Scatter(
+                    x=[trajectory[0, 0]],
+                    y=[trajectory[0, 1]],
+                    mode='markers',
+                    marker=dict(size=12, color='lime', symbol='star'),
+                    name="Start"
+                ))
+                
+                fig.update_layout(
+                    title="Attention Drift Simulation",
+                    height=500,
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font_color='#e6e6e6',
+                    xaxis=dict(range=[-12, 12]),
+                    yaxis=dict(range=[-12, 12])
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.info("Run a simulation to see attention drift patterns")
     
-    # ==================== DECISION OPTIMIZER ====================
-    st.markdown("## 🤔 Spacetime Decision Optimizer")
+    # ==================== ESCAPE VELOCITY TRAINING ====================
+    st.markdown("## 🚀 Escape Velocity Training")
     
     col1, col2 = st.columns([2, 1])
     
     with col1:
         st.markdown("""
-        ### When should you schedule important tasks?
+        ### Build Focus to Escape Mental Gravity Wells
         
-        Based on your personal spacetime metrics, we can optimize timing:
+        **Training Principle:**  
+        Escape velocity = √(2GM/r)  
+        Where:
+        - **G** = Gravitational constant (fixed)
+        - **M** = Mental mass of the thought
+        - **r** = Your current distance from it
+        
+        **To escape a thought loop:**
+        1. **Reduce M**: Lower emotional charge (through reframing)
+        2. **Increase r**: Create mental distance (through mindfulness)
+        3. **Increase v**: Build focus energy (through practice)
         """)
         
-        task_name = st.text_input("Task Name", "Important Meeting")
-        task_importance = st.slider("Importance (1-10)", 1, 10, 7, 
-                                   help="How critical is this task?")
-        task_difficulty = st.slider("Difficulty (1-10)", 1, 10, 5,
-                                   help="Mental/emotional effort required")
+        # Interactive training
+        selected_object = st.selectbox(
+            "Select thought to escape:",
+            object_names,
+            index=strongest_idx
+        )
         
-        if st.button("🚀 Calculate Optimal Spacetime", use_container_width=True):
-            # Use recent personal rhythm (average of last 3 energy levels)
-            recent_rhythm = df['energy'].tail(3).mean() if len(df) >= 3 else 5
+        selected_idx = object_names.index(selected_object)
+        selected_mass = masses[selected_idx]
+        
+        current_distance = st.slider(
+            "Your mental distance from this thought (r):",
+            0.1, 10.0, 2.0, 0.1,
+            help="How much psychological distance you have"
+        )
+        
+        required_velocity = st.session_state.gravity_engine.calculate_escape_velocity(
+            selected_mass, current_distance
+        )
+        
+        your_focus = st.slider(
+            "Your current focus energy (v):",
+            0.0, 10.0, 5.0, 0.1,
+            help="Your available attention/focus energy"
+        )
+        
+        if your_focus >= required_velocity:
+            st.success(f"""
+            ✅ **ESCAPE VELOCITY ACHIEVED!**
             
-            optimization = st.session_state.engine.optimize_timing(
-                task_importance, 
-                task_difficulty, 
-                recent_rhythm
-            )
+            Required: {required_velocity:.1f}  
+            Your focus: {your_focus:.1f}  
             
-            optimal_time = datetime.now() + timedelta(hours=optimization['hours_from_now'])
+            You can break free from "{selected_object}"!
+            """)
+        else:
+            st.warning(f"""
+            ⚠️ **ESCAPE VELOCITY NOT REACHED**
             
-            st.markdown(f"""
-            <div class='metric-card'>
-                <h3>✨ Optimal Spacetime Calculated</h3>
-                
-                <h2 style='color: #00ff00;'>{optimal_time.strftime('%A, %B %d at %I:%M %p')}</h2>
-                
-                <p><strong>In {optimization['hours_from_now']:.1f} hours from now</strong></p>
-                
-                <p><em>Confidence: {optimization['confidence']*100:.0f}%</em></p>
-                
-                <p>📝 <strong>Reasoning:</strong> {optimization['reason']}</p>
-                
-                <p>⏳ <strong>Based on your:</strong></p>
-                <ul>
-                    <li>Average energy rhythm: {recent_rhythm:.1f}/10</li>
-                    <li>Current time dilation: {df.iloc[-1]['time_dilation']:.2f}x</li>
-                    <li>Temporal curvature: {df.iloc[-1]['temporal_curvature']:.3f}</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
+            Required: {required_velocity:.1f}  
+            Your focus: {your_focus:.1f}  
+            
+            **To escape:**
+            1. Increase focus by {required_velocity - your_focus:.1f} units
+            2. Increase distance to {selected_mass * 2 / your_focus**2:.1f}
+            3. Reduce thought's emotional charge
+            """)
     
     with col2:
         st.markdown("""
-        ### 🧠 How It Works
+        ### 🧠 Training Exercises
         
-        The optimizer uses:
+        **1. Distance Building:**
+        - Objectify the thought ("I notice I'm thinking about...")
+        - Write it down physically
+        - Schedule worry time later
         
-        1. **Your Time Dilation**  
-           Current stress/focus ratio
+        **2. Focus Building:**
+        - 5-minute mindfulness meditation
+        - Pomodoro technique (25 min focus)
+        - Single-tasking practice
         
-        2. **Temporal Curvature**  
-           Emotional impact on planning
+        **3. Mass Reduction:**
+        - Cognitive reframing
+        - Emotional labeling
+        - Perspective shifting
         
-        3. **Energy Rhythms**  
-           Historical patterns
-        
-        4. **Task Geometry**  
-           Importance/difficulty spacetime
-        
-        *"The only way to escape the corruptible effect of praise is to go on working." — Einstein*
+        *"The measure of intelligence is the ability to change." — Einstein*
         """)
         
-        # Record decision quality
-        if len(st.session_state.spacetime_data['decisions']) > 0:
-            st.markdown("#### Recent Decision Quality")
-            recent_decisions = st.session_state.spacetime_data['decisions'][-5:]
-            for d in recent_decisions:
-                quality_stars = "★" * int(d['quality']/2) + "☆" * (5 - int(d['quality']/2))
-                st.caption(f"{d['task'][:20]}... {quality_stars}")
+        # Progress chart
+        if len(st.session_state.mind_gravity_data['escape_velocities']) > 1:
+            progress_df = pd.DataFrame({
+                'Session': range(len(st.session_state.mind_gravity_data['escape_velocities'])),
+                'Escape Velocity': st.session_state.mind_gravity_data['escape_velocities']
+            })
+            
+            chart = alt.Chart(progress_df).mark_line(point=True).encode(
+                x='Session',
+                y='Escape Velocity',
+                color=alt.value('#00ffff'),
+                tooltip=['Session', 'Escape Velocity']
+            ).properties(
+                title='Escape Velocity Progress',
+                height=200
+            )
+            
+            st.altair_chart(chart, use_container_width=True)
 
 except Exception as e:
-    st.error(f"Spacetime calculation error: {str(e)}")
-    st.info("Please record more data points to stabilize your spacetime continuum.")
+    st.error(f"Gravity calculation error: {str(e)}")
+    st.info("Please check your mental object data and try again.")
 
 # ==================== FOOTER ====================
 st.markdown("---")
 st.markdown("""
-<div style='text-align: center; color: #aaaaff; padding: 20px;'>
-    <p><strong>⏳ CHRONOSPHERE v1.0</strong> | Einstein-Inspired Spacetime Optimization</p>
-    <p><em>Fusing Relativity Physics with Cognitive Time Perception</em></p>
-    <p>📡 Record daily to improve accuracy | 🔮 14+ days for predictive analytics</p>
-    <p>💡 <strong>Einstein Insight:</strong> "Imagination is more important than knowledge."</p>
+<div style='text-align: center; color: #88ccff; padding: 20px;'>
+    <p><strong>🌀 MIND-GRAVITY FIELD MAPPER v1.0</strong> | Einstein-Inspired Cognitive Physics</p>
+    <p><em>Applying Gravitational Physics to Attention Management</em></p>
+    <p>⚫ Map mental black holes | 🚀 Calculate escape velocities | 🔄 Predict attention orbits</p>
+    <p>💡 <strong>Einstein Insight:</strong> "We cannot solve our problems with the same thinking we used when we created them."</p>
 </div>
 """, unsafe_allow_html=True)
 
-# ==================== AUTO-SAVE REMINDER ====================
-if len(st.session_state.spacetime_data['timestamps']) > 0:
-    last_record = pd.to_datetime(st.session_state.spacetime_data['timestamps'][-1])
-    hours_since = (datetime.now() - last_record).total_seconds() / 3600
+# ==================== AUTO-ANALYSIS ====================
+if len(st.session_state.mind_gravity_data['timestamps']) > 0:
+    latest_objects = st.session_state.mind_gravity_data['mental_objects'][-1]
     
-    if hours_since > 24:
-        st.warning(f"⏰ {hours_since:.0f} hours since last check-in. Time perception data aging.")
+    if len(latest_objects) >= 2:
+        # Find the strongest gravitational relationship
+        max_gravity = 0
+        strongest_pair = None
+        
+        for i in range(len(latest_objects)):
+            for j in range(i+1, len(latest_objects)):
+                dist = np.sqrt((latest_objects[i][1]-latest_objects[j][1])**2 + 
+                              (latest_objects[i][2]-latest_objects[j][2])**2)
+                gravity = st.session_state.gravity_engine.compute_gravity_force(
+                    latest_objects[i][3], latest_objects[j][3], dist
+                )
+                
+                if gravity > max_gravity:
+                    max_gravity = gravity
+                    strongest_pair = (latest_objects[i][0], latest_objects[j][0])
+        
+        if strongest_pair:
+            st.info(f"""
+            🔍 **GRAVITY INSIGHT:** Your strongest mental connection is between  
+            **"{strongest_pair[0]}"** and **"{strongest_pair[1]}"**  
+            Gravity force: {max_gravity:.2f}  
+            
+            *This relationship may be draining your attention energy.*
+            """)
